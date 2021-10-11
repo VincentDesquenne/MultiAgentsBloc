@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Main {
-    public static int endIteration = 50;
+    public static int endIteration = 5;
 
     public static void main(String[] args) {
         Bloc blocA = new Bloc("A");
@@ -17,8 +18,17 @@ public class Main {
         Environnement env = new Environnement(mesBlocs);
         boolean end = false;
 
-        System.out.println(env);
-
+        Random rand = new Random();
+        int nbAleatoire = 0;
+        Bloc blocSelect;
+        while(!end && endIteration != 0){
+            System.out.println(env);
+            nbAleatoire = rand.nextInt(4);
+            blocSelect = mesBlocs.get(nbAleatoire);
+            env.perception(blocSelect);
+            end = env.estTermine();
+            endIteration--;
+        }
 
     }
 }
