@@ -4,20 +4,19 @@ import java.util.*;
 
 public class Environnement {
 
-    private ArrayList<Bloc> listBlocs = new ArrayList<>();
-    private HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
-    private ArrayList<String> solutionFinale = new ArrayList<>();
+    private HashMap<Integer, Stack<Bloc>> hashMap = new HashMap<>();
+    private Stack<Bloc> solutionFinale = new Stack<>();
     private int position;
 
 
     public Environnement(ArrayList<Bloc> mesBlocs) {
         ArrayList<String> blocsName = new ArrayList<>();
-        listBlocs = (ArrayList<Bloc>) mesBlocs.clone();
+        Stack<Bloc> pile = new Stack<>();
         ArrayList<Integer> mesEntiers = new ArrayList<>();
         Collections.shuffle(mesBlocs);
         for (int i = 0; i< 4; i ++) {
             mesBlocs.get(i).setEnvironnement(this);
-            if (i == 0) {
+            /*if (i == 0) {
                 mesBlocs.get(i).setBlocDessous(null);
                 mesBlocs.get(i).setBlocDessus(mesBlocs.get(i+1));
             } else if (i == 3) {
@@ -27,27 +26,28 @@ public class Environnement {
             else {
                 mesBlocs.get(i).setBlocDessous(mesBlocs.get(i-1));
                 mesBlocs.get(i).setBlocDessus(mesBlocs.get(i+1));
-            }
+            }*/
             blocsName.add(mesBlocs.get(i).getNom());
+            pile.add(mesBlocs.get(i));
         }
-        hashMap.put(0, blocsName);
-        hashMap.put(1, new ArrayList<>());
-        hashMap.put(2, new ArrayList<>());
-        solutionFinale.add("A");
-        solutionFinale.add("B");
-        solutionFinale.add("C");
-        solutionFinale.add("D");
+        hashMap.put(0, pile);
+        hashMap.put(1, new Stack<>());
+        hashMap.put(2, new Stack<>());
+        solutionFinale.add(new Bloc("A"));
+        solutionFinale.add(new Bloc("B"));
+        solutionFinale.add(new Bloc("C"));
+        solutionFinale.add(new Bloc("D"));
     }
 
     public void perception(Bloc bloc) {
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
-            if (hashMap.get(i).contains(bloc.getNom())) {
-                indexHashMap = i;
-                break;
-            }
+                if (hashMap.get(i).contains(bloc)) {
+                    indexHashMap = i;
+                    break;
+                }
         }
-        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc.getNom());
+        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc);
         Random rand = new Random();
         int nbAleatoire = indexHashMap;
         if (indexBloc == hashMap.get(indexHashMap).size()-1) {
@@ -55,10 +55,9 @@ public class Environnement {
                 nbAleatoire = rand.nextInt(3);
             }
             bloc.seDeplacer(nbAleatoire);
-        } else if (hashMap.get(indexHashMap).get(indexBloc + 1) != null) {
-            //this.perception(hashMap.get(indexHashMap).get(indexBloc + 1)); // correspond à notre pousser
-            bloc.pousser();
-        } else {
+        } else if (hashMap.get(indexHashMap).get(indexBloc + 1) != null && this.needToBeMove(bloc, indexHashMap, indexBloc)) {
+            this.perception(hashMap.get(indexHashMap).get(indexBloc + 1)); // correspond à notre pousser
+        } else if (this.needToBeMove(bloc, indexHashMap, indexBloc)){
             while (nbAleatoire == indexHashMap) {
                 nbAleatoire = rand.nextInt(3);
             }
@@ -67,28 +66,49 @@ public class Environnement {
     }
 
     public boolean estTermine() {
-        for (Map.Entry<Integer, ArrayList<String>> mapentry : hashMap.entrySet()) {
+        for (Map.Entry<Integer, Stack<Bloc>> mapentry : hashMap.entrySet()) {
             if (mapentry.getValue().size() == 4) {
                 for (int i = 0; i < mapentry.getValue().size(); i++) {
-                    if (mapentry.getValue().get(i) != solutionFinale.get(i)) return false;
+                    if (mapentry.getValue().get(i).getNom() != solutionFinale.get(i).getNom()) return false;
                 }
-            } else return false;
-        }
-        return true;
-    }
-
-    public Bloc findBlocByName(String nom) {
-        for(int i=0; i < listBlocs.size(); i++){
-            if(listBlocs.get(i).getNom() == nom){
-                return listBlocs.get(i);
+                return true;
             }
         }
-        return null;
+        return false;
+    }
+
+    public boolean needToBeMove(Bloc bloc, int indexHashMap, int indexStack) {
+        Bloc blocAuDessus = null;
+        Bloc blocAuDessous = null;
+        for (int i=0; i < 4; i ++) {
+            if (this.solutionFinale.get(i).getNom() == bloc.getNom()) {
+                if (i == 0) {
+                    blocAuDessus = solutionFinale.get(i+1);
+                    blocAuDessous = null;
+                } else if (i == 3) {
+                    blocAuDessus = null;
+                    blocAuDessous = solutionFinale.get(i - 1);
+                } else {
+                    blocAuDessus = solutionFinale.get(i + 1);
+                    blocAuDessous = solutionFinale.get(i - 1);
+                }
+            }
+        }
+        if (indexStack == 0 && blocAuDessous == null
+                && this.hashMap.get(indexHashMap).get(indexStack + 1) == null) { // cas pour la lettre tout en bas
+            return false;
+        }
+        if (blocAuDessus == this.hashMap.get(indexHashMap).get(indexStack + 1)
+                && blocAuDessous == this.hashMap.get(indexHashMap).get(indexStack - 1)) {
+            return false;
+        }
+        return true;
+
     }
 
     @Override
     public String toString() {
-        for (Map.Entry<Integer, ArrayList<String>> mapentry : hashMap.entrySet()) {
+        for (Map.Entry<Integer, Stack<Bloc>> mapentry : hashMap.entrySet()) {
             System.out.println("POSITION : " + mapentry.getKey());
             for (int i = 0; i < mapentry.getValue().size(); i++) {
                 System.out.println("|| " + mapentry.getValue().get(mapentry.getValue().size()-i-1) + " ||");
@@ -98,19 +118,19 @@ public class Environnement {
         return "END \n -------------------------------------------------------";
     }
 
-    public HashMap<Integer, ArrayList<String>> getHashMap() {
+    public HashMap<Integer, Stack<Bloc>> getHashMap() {
         return hashMap;
     }
 
-    public void setHashMap(HashMap<Integer, ArrayList<String>> hashMap) {
+    public void setHashMap(HashMap<Integer, Stack<Bloc>> hashMap) {
         this.hashMap = hashMap;
     }
 
-    public ArrayList<String> getSolutionFinale() {
+    public Stack<Bloc> getSolutionFinale() {
         return solutionFinale;
     }
 
-    public void setSolutionFinale(ArrayList<String> solutionFinale) {
+    public void setSolutionFinale(Stack<Bloc> solutionFinale) {
         this.solutionFinale = solutionFinale;
     }
 
