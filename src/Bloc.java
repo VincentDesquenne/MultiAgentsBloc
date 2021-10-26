@@ -26,6 +26,10 @@ public class Bloc {
 
     }
 
+    public void seDeplacer2 (int x) {
+
+    }
+
     public void pousser() {
 
     }

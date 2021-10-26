@@ -43,25 +43,25 @@ public class Environnement {
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
                 if (hashMap.get(i).contains(bloc)) {
-                    indexHashMap = i;
+                    indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
                     break;
                 }
         }
-        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc);
+        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc); //regarde position du bloc (tout en haut ou tout en bas par exemple)
         Random rand = new Random();
         int nbAleatoire = indexHashMap;
-        if (indexBloc == hashMap.get(indexHashMap).size()-1) {
+        if (indexBloc == hashMap.get(indexHashMap).size()-1) { // si le bloc est tout en haut d'une pile de 4, on le déplace
             while (nbAleatoire == indexHashMap) {
-                nbAleatoire = rand.nextInt(3);
+                nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
             }
             bloc.seDeplacer(nbAleatoire);
-        } else if (hashMap.get(indexHashMap).get(indexBloc + 1) != null && this.needToBeMove(bloc, indexHashMap, indexBloc)) {
+        } else if (hashMap.get(indexHashMap).get(indexBloc + 1) != null && this.needToBeMove(bloc, indexHashMap, indexBloc)) { // si le bloc n'est pas tout en haut, et l'environnement lui dit qu'il doit bouger
             this.perception(hashMap.get(indexHashMap).get(indexBloc + 1)); // correspond à notre pousser
-        } else if (this.needToBeMove(bloc, indexHashMap, indexBloc)){
+        } else {//if (this.needToBeMove(bloc, indexHashMap, indexBloc)){
             while (nbAleatoire == indexHashMap) {
                 nbAleatoire = rand.nextInt(3);
             }
-            bloc.seDeplacer(nbAleatoire);
+            bloc.seDeplacer(nbAleatoire); // le bloc est en haut d'une pile d'une taille inférieure à 4
         }
     }
 
