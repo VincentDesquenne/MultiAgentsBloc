@@ -1,5 +1,3 @@
-import java.awt.image.AreaAveragingScaleFilter;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Environnement {
@@ -14,19 +12,8 @@ public class Environnement {
         Stack<Bloc> pile = new Stack<>();
         ArrayList<Integer> mesEntiers = new ArrayList<>();
         Collections.shuffle(mesBlocs);
-        for (int i = 0; i< 4; i ++) {
+        for (int i = 0; i < 4; i++) {
             mesBlocs.get(i).setEnvironnement(this);
-            /*if (i == 0) {
-                mesBlocs.get(i).setBlocDessous(null);
-                mesBlocs.get(i).setBlocDessus(mesBlocs.get(i+1));
-            } else if (i == 3) {
-                mesBlocs.get(i).setBlocDessous(mesBlocs.get(i-1));
-                mesBlocs.get(i).setBlocDessus(null);
-            }
-            else {
-                mesBlocs.get(i).setBlocDessous(mesBlocs.get(i-1));
-                mesBlocs.get(i).setBlocDessus(mesBlocs.get(i+1));
-            }*/
             blocsName.add(mesBlocs.get(i).getNom());
             pile.add(mesBlocs.get(i));
         }
@@ -34,35 +21,43 @@ public class Environnement {
         hashMap.put(1, new Stack<>());
         hashMap.put(2, new Stack<>());
         hashMap.get(0).get(3).setPriorite(2);
-        solutionFinale.add(new Bloc("A"));
-        solutionFinale.add(new Bloc("B"));
-        solutionFinale.add(new Bloc("C"));
-        solutionFinale.add(new Bloc("D"));
+        solutionFinale.add(new Bloc("A", null));
+        solutionFinale.add(new Bloc("B", null));
+        solutionFinale.add(new Bloc("C", null));
+        solutionFinale.add(new Bloc("D", null));
     }
 
     public void perception(Bloc bloc) {
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
-                if (hashMap.get(i).contains(bloc)) {
-                    indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
-                    break;
-                }
+            if (hashMap.get(i).contains(bloc)) {
+                indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
+                break;
+            }
         }
         int indexBloc = hashMap.get(indexHashMap).indexOf(bloc); //regarde position du bloc (tout en haut ou tout en bas par exemple)
         Random rand = new Random();
         int nbAleatoire = indexHashMap;
-        if (indexBloc == hashMap.get(indexHashMap).size()-1) { // si le bloc est tout en haut d'une pile de 4, on le déplace
-            while (nbAleatoire == indexHashMap) {
-                nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
+        this.needToBeMove(bloc, indexHashMap, indexBloc);
+        if (bloc.isPushed()) { // si le bloc est poussée
+            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // si il est tout en haut, il se déplace
+                while (nbAleatoire == indexHashMap) {
+                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
+                }
+                bloc.setPushed(false); // du coup il n'est plus poussé
+                bloc.seDeplacer(nbAleatoire); // il se déplace aléatoirement
+            } else {
+                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1)); // si il est poussé, mais ne peut pas se déplacer, il pousse
             }
-            bloc.seDeplacer(nbAleatoire);
-        } else if (hashMap.get(indexHashMap).get(indexBloc + 1) != null && this.needToBeMove(bloc, indexHashMap, indexBloc)) { // si le bloc n'est pas tout en haut, et l'environnement lui dit qu'il doit bouger
-            this.perception(hashMap.get(indexHashMap).get(indexBloc + 1)); // correspond à notre pousser
-        } else {//if (this.needToBeMove(bloc, indexHashMap, indexBloc)){
-            while (nbAleatoire == indexHashMap) {
-                nbAleatoire = rand.nextInt(3);
+        } else if (!bloc.isSatisfied()) { // si le bloc n'est pas poussé, mais n'est pas satisfait
+            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // il est tout en haut, il peut bouger
+                while (nbAleatoire == indexHashMap) {
+                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
+                }
+                bloc.seDeplacer(nbAleatoire);
+            } else { // il ne peut pas bouger, il pousse
+                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1));
             }
-            bloc.seDeplacer(nbAleatoire); // le bloc est en haut d'une pile d'une taille inférieure à 4
         }
     }
 
@@ -78,33 +73,13 @@ public class Environnement {
         return false;
     }
 
-    public boolean needToBeMove(Bloc bloc, int indexHashMap, int indexStack) {
-        Bloc blocAuDessus = null;
-        Bloc blocAuDessous = null;
-        for (int i=0; i < 4; i ++) {
-            if (this.solutionFinale.get(i).getNom() == bloc.getNom()) {
-                if (i == 0) {
-                    blocAuDessus = solutionFinale.get(i+1);
-                    blocAuDessous = null;
-                } else if (i == 3) {
-                    blocAuDessus = null;
-                    blocAuDessous = solutionFinale.get(i - 1);
-                } else {
-                    blocAuDessus = solutionFinale.get(i + 1);
-                    blocAuDessous = solutionFinale.get(i - 1);
-                }
-            }
+    public void needToBeMove(Bloc bloc, int indexHashMap, int indexStack) { // met à jour si le bloc est bien placé ou non
+        if (indexStack == 0) {
+            bloc.setSatisfied(bloc.getBlocDessous() == null);
+        } else if (bloc.getBlocDessous() == this.hashMap.get(indexHashMap).get(indexStack - 1)) {
+            bloc.setSatisfied(true);
         }
-        if (indexStack == 0 && blocAuDessous == null
-                && this.hashMap.get(indexHashMap).get(indexStack + 1) == null) { // cas pour la lettre tout en bas
-            return false;
-        }
-        if (blocAuDessus == this.hashMap.get(indexHashMap).get(indexStack + 1)
-                && blocAuDessous == this.hashMap.get(indexHashMap).get(indexStack - 1)) {
-            return false;
-        }
-        return true;
-
+        bloc.setSatisfied(false);
     }
 
 
@@ -113,7 +88,7 @@ public class Environnement {
         for (Map.Entry<Integer, Stack<Bloc>> mapentry : hashMap.entrySet()) {
             System.out.println("POSITION : " + mapentry.getKey());
             for (int i = 0; i < mapentry.getValue().size(); i++) {
-                System.out.println("|| " + mapentry.getValue().get(mapentry.getValue().size()-i-1) + " ||");
+                System.out.println("|| " + mapentry.getValue().get(mapentry.getValue().size() - i - 1) + " ||");
             }
         }
 
