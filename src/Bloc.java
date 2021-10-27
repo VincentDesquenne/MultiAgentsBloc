@@ -1,9 +1,11 @@
 public class Bloc {
     private Environnement environnement;
     private String nom;
+    private int priorite;
 
     public Bloc(String nom) {
         this.nom = nom;
+        this.priorite = 0;
     }
 
     public void seDeplacer(int x) {
@@ -46,10 +48,19 @@ public class Bloc {
         this.environnement = environnement;
     }
 
+    public int getPriorite() {
+        return priorite;
+    }
+
+    public void setPriorite(int priorite) {
+        this.priorite = priorite;
+    }
+
     @Override
     public String toString() {
         return "Bloc{" +
                 ", nom='" + nom + '\'' +
+                ", Priorite='" + priorite + '\'' +
                 '}';
     }
 }

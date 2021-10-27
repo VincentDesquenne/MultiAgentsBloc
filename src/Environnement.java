@@ -33,6 +33,7 @@ public class Environnement {
         hashMap.put(0, pile);
         hashMap.put(1, new Stack<>());
         hashMap.put(2, new Stack<>());
+        hashMap.get(0).get(3).setPriorite(2);
         solutionFinale.add(new Bloc("A"));
         solutionFinale.add(new Bloc("B"));
         solutionFinale.add(new Bloc("C"));
@@ -105,6 +106,7 @@ public class Environnement {
         return true;
 
     }
+
 
     @Override
     public String toString() {
