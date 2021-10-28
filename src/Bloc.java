@@ -35,6 +35,20 @@ public class Bloc {
     }
 
     public void seDeplacer2 (int x) {
+        int index = 0;
+        for (int i = 0; i < environnement.getHashMap().size(); i++) {
+            if (environnement.getHashMap().get(i).contains(this)) {
+                index = environnement.getHashMap().get(i).indexOf(this);
+                environnement.getHashMap().get(i).remove(index);
+                environnement.getHashMap().get(x).add(this);
+
+                break;
+//                environnement.setNewPriorite(this, x);// met a jour priorite du bloc qui vient d'être déplacer
+////                System.out.println("NEW PRIO DU BLOC : " + this.getNom() + " EST DE : " + environnement.quelEstMaPriorite(this, x));
+//                if (environnement.getHashMap().get(i).size() != 0) environnement.setNewPriorite(environnement.getHashMap().get(i).peek(), i); // met a jour le bloc du dessous de celui qui a été déplacer
+            }
+        }
+
 
     }
 
@@ -48,7 +62,7 @@ public class Bloc {
 
     public void pousser(Bloc bloc) {
         bloc.setPushed(true);
-        this.environnement.perception(bloc);
+        this.environnement.perception2(bloc);
     }
 
     public String getNom() {
@@ -83,6 +97,7 @@ public class Bloc {
     public String toString() {
         return "Bloc{" +
                 ", nom='" + nom + '\'' +
+                ", Priorite ='" + priorite + '\'' +
                 '}';
     }
 }
