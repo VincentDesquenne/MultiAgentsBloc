@@ -10,7 +10,7 @@ public class Main {
         System.out.println("Entrer le numéro de la question que vous voulez (1 ou 2)");
         int n = reader.nextInt();
         Scanner reader2 = new Scanner(System.in);  // Reading from System.in
-        System.out.println("Entrer le nombre d'itérations que vous voulez faire (minimum 1)");
+        System.out.println("Entrer le nombre d'essais que vous voulez faire (minimum 1)");
         int n2 = reader2.nextInt();
         if (n == 1 && n2 >= 1) question1(n2);
         else if (n == 2 && n2 >= 1) question2(n2);
