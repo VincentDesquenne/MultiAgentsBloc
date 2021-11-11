@@ -5,13 +5,18 @@ public class Environnement {
     private final HashMap<Integer, Stack<Bloc>> hashMap = new HashMap<>();
     private final Stack<Bloc> solutionFinale = new Stack<>();
     private ArrayList<Bloc> mesBlocs = new ArrayList<>();
-    private int position;
 
 
     public Environnement(ArrayList<Bloc> mesBlocs) {
         ArrayList<String> blocsName = new ArrayList<>();
         Stack<Bloc> pile = new Stack<>();
-        Collections.shuffle(mesBlocs);
+        solutionFinale.add(new Bloc("A", null));
+        solutionFinale.add(new Bloc("B", null));
+        solutionFinale.add(new Bloc("C", null));
+        solutionFinale.add(new Bloc("D", null));
+        do {
+            Collections.shuffle(mesBlocs);
+        } while (this.estTermine());
         for (int i = 0; i < 4; i++) {
             mesBlocs.get(i).setEnvironnement(this);
             blocsName.add(mesBlocs.get(i).getNom());
@@ -20,10 +25,7 @@ public class Environnement {
         hashMap.put(0, pile);
         hashMap.put(1, new Stack<>());
         hashMap.put(2, new Stack<>());
-        solutionFinale.add(new Bloc("A", null));
-        solutionFinale.add(new Bloc("B", null));
-        solutionFinale.add(new Bloc("C", null));
-        solutionFinale.add(new Bloc("D", null));
+
         this.mesBlocs = mesBlocs;
     }
 
@@ -83,7 +85,7 @@ public class Environnement {
     }
 
     public void perception2(Bloc bloc) {
-        System.out.println("C'EST AU TOUR DU BLOC " + bloc.getNom());
+        System.out.println("C'est au tour du bloc " + bloc.getNom());
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -92,15 +94,10 @@ public class Environnement {
             }
         }
         int indexBloc = hashMap.get(indexHashMap).indexOf(bloc); //regarde position du bloc (tout en haut ou tout en bas par exemple)
-        Random rand = new Random();
-        int nbAleatoire = indexHashMap;
         this.needToBeMove(bloc, indexHashMap, indexBloc); // regarde s'il peut bouger
         int nextPosition = this.calculerBestMove(bloc, indexHashMap, indexBloc);
         if (bloc.isPushed()) { // si le bloc est poussée
             if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // si il est tout en haut, il se déplace
-                while (nbAleatoire == indexHashMap) {
-                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
-                }
                 bloc.setPushed(false); // du coup il n'est plus poussé
                 bloc.seDeplacer2(nextPosition);// il se déplace aléatoirement
             } else {
@@ -108,17 +105,10 @@ public class Environnement {
             }
         } else if (!bloc.isSatisfied()) { // si le bloc n'est pas poussé, mais n'est pas satisfait
             if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // il est tout en haut, il peut bouger
-                while (nbAleatoire == indexHashMap) {
-                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
-                }
                 bloc.seDeplacer2(nextPosition);
                 this.needToBeMove(bloc, nextPosition, this.getHashMap().get(nextPosition).indexOf(bloc)); // regarde si le bloc est satisfait ou non
-                int newIndex = this.getHashMap().get(nextPosition).indexOf(bloc); // attribue l'index ou se trouve le bloc bien placé
                 if (bloc.isSatisfied()) { // le bloc vient d'être bien placé
                     bloc.setPriorite(0); // sa priorité devient donc 0, il n'a plus a bougé
-                    if (newIndex + 1 != this.hashMap.get(nextPosition).size() && this.hashMap.get(nextPosition).get(newIndex + 1).getBlocDessous() != bloc) { // si celui du dessus n'est pas le bon, il faut le faire bouger, sinon il va bloquer
-                        bloc.pousser2(this.hashMap.get(nextPosition).get(newIndex + 1));
-                    }
                 }
             } else { // il ne peut pas bouger, il pousse
                 bloc.pousser2(hashMap.get(indexHashMap).get(indexBloc + 1));
@@ -166,7 +156,7 @@ public class Environnement {
             }
         }
 
-        for (int i = 0; i < 3; i ++) { // aucun place qui correspond, aucune place de libre, va se mettre pour ne pas embêter premier bloc, -> QUESTION 2
+        for (int i = 0; i < 3; i++) { // aucun place qui correspond, aucune place de libre, va se mettre pour ne pas embêter premier bloc, -> QUESTION 2
             if (i != indexHashMap) {
                 if (this.hashMap.get(i).size() != 0 && this.hashMap.get(i).get(0).getPriorite() != 0) return i;
             }

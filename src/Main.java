@@ -1,17 +1,25 @@
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
+        Scanner reader = new Scanner(System.in);  // Reading from System.in
+        System.out.println("Entrer le numéro de la question que vous voulez (1 ou 2)");
+        int n = reader.nextInt();
+        Scanner reader2 = new Scanner(System.in);  // Reading from System.in
+        System.out.println("Entrer le nombre d'itérations que vous voulez faire (minimum 1)");
+        int n2 = reader2.nextInt();
+        if (n == 1 && n2 >= 1) question1(n2);
+        else if (n == 2 && n2 >= 1) question2(n2);
+
+    }
+
+    static void question1(int n) {
         int total = 0;
-
-
-        // QUESTION 1
-        /*for (int i = 0; i < 400; i ++) {
+        for (int i = 0; i < n; i++) {
             Bloc blocA = new Bloc("A", null);
             Bloc blocB = new Bloc("B", blocA);
             Bloc blocC = new Bloc("C", blocB);
@@ -41,10 +49,12 @@ public class Main {
             }
             total += compteur;
         }
-        System.out.println("Sur 400 essais, la moyenne pour des agents qui communiquent entre eux est de : " + total/400);*/
+        System.out.println("Sur " + n + " essais, la moyenne pour des agents qui communiquent entre eux est de : " + total / n);
+    }
 
-        // QUESTION 2
-        for (int i = 0; i < 400; i ++) {
+    static void question2(int n) {
+        int total = 0;
+        for (int i = 0; i < n; i++) {
             Bloc blocA = new Bloc("A", null);
             Bloc blocB = new Bloc("B", blocA);
             Bloc blocC = new Bloc("C", blocB);
@@ -59,8 +69,6 @@ public class Main {
             boolean end = false;
             System.out.println(env);
             int compteur = 0;
-            int nbAleatoire = 0;
-            Random rand = new Random();
             Bloc blocSelect;
             env.communicationAgent();
             while (!end) {
@@ -73,7 +81,6 @@ public class Main {
             }
             total += compteur;
         }
-        System.out.println("Sur 400 essais, la moyenne pour des agents qui communiquent entre eux est de : " + total/400);
-
+        System.out.println("Sur " + n + " essais, la moyenne pour des agents qui communiquent entre eux est de : " + total / n);
     }
 }
