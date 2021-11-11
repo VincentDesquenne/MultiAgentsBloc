@@ -62,6 +62,11 @@ public class Bloc {
 
     public void pousser(Bloc bloc) {
         bloc.setPushed(true);
+        this.environnement.perception(bloc);
+    }
+
+    public void pousser2(Bloc bloc) {
+        bloc.setPushed(true);
         this.environnement.perception2(bloc);
     }
 

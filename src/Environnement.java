@@ -104,7 +104,7 @@ public class Environnement {
                 bloc.setPushed(false); // du coup il n'est plus poussé
                 bloc.seDeplacer2(nextPosition);// il se déplace aléatoirement
             } else {
-                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1)); // si il est poussé, mais ne peut pas se déplacer, il pousse
+                bloc.pousser2(hashMap.get(indexHashMap).get(indexBloc + 1)); // si il est poussé, mais ne peut pas se déplacer, il pousse
             }
         } else if (!bloc.isSatisfied()) { // si le bloc n'est pas poussé, mais n'est pas satisfait
             if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // il est tout en haut, il peut bouger
@@ -117,17 +117,17 @@ public class Environnement {
                 if (bloc.isSatisfied()) { // le bloc vient d'être bien placé
                     bloc.setPriorite(0); // sa priorité devient donc 0, il n'a plus a bougé
                     if (newIndex + 1 != this.hashMap.get(nextPosition).size() && this.hashMap.get(nextPosition).get(newIndex + 1).getBlocDessous() != bloc) { // si celui du dessus n'est pas le bon, il faut le faire bouger, sinon il va bloquer
-                        bloc.pousser(this.hashMap.get(nextPosition).get(newIndex + 1));
+                        bloc.pousser2(this.hashMap.get(nextPosition).get(newIndex + 1));
                     }
                 }
             } else { // il ne peut pas bouger, il pousse
-                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1));
+                bloc.pousser2(hashMap.get(indexHashMap).get(indexBloc + 1));
             }
         } else { // Le premier bloc est bien placé, il faut pousser ceux du haut du coup, -> QUESTION 2
             bloc.setPriorite(0);
-            bloc.pousser(this.getHashMap().get(0).get(3));
-            bloc.pousser(this.getHashMap().get(0).get(2));
-            bloc.pousser(this.getHashMap().get(0).get(1));
+            bloc.pousser2(this.getHashMap().get(0).get(3));
+            bloc.pousser2(this.getHashMap().get(0).get(2));
+            bloc.pousser2(this.getHashMap().get(0).get(1));
 
         }
 
