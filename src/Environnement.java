@@ -50,7 +50,7 @@ public class Environnement {
         }
     }
 
-    public void perception(Bloc bloc) {
+    public boolean canMove(Bloc bloc) {
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -58,34 +58,12 @@ public class Environnement {
                 break;
             }
         }
-        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc); //regarde position du bloc (tout en haut ou tout en bas par exemple)
+        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc);
+        return indexBloc + 1 == this.hashMap.get(indexHashMap).size();
+    }
+
+    public int getAleatoirePosition(Bloc bloc) {
         Random rand = new Random();
-        int nbAleatoire = indexHashMap;
-        this.needToBeMove(bloc, indexHashMap, indexBloc); // regarde s'il peut bouger
-        if (bloc.isPushed()) { // si le bloc est poussée
-            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // si il est tout en haut, il se déplace
-                while (nbAleatoire == indexHashMap) {
-                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
-                }
-                bloc.setPushed(false); // du coup il n'est plus poussé
-                bloc.seDeplacer(nbAleatoire); // il se déplace aléatoirement
-            } else {
-                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1)); // si il est poussé, mais ne peut pas se déplacer, il pousse
-            }
-        } else if (!bloc.isSatisfied()) { // si le bloc n'est pas poussé, mais n'est pas satisfait
-            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // il est tout en haut, il peut bouger
-                while (nbAleatoire == indexHashMap) {
-                    nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
-                }
-                bloc.seDeplacer(nbAleatoire);
-            } else { // il ne peut pas bouger, il pousse
-                bloc.pousser(hashMap.get(indexHashMap).get(indexBloc + 1));
-            }
-        }
-    }
-
-    public void perception2(Bloc bloc) {
-        System.out.println("C'est au tour du bloc " + bloc.getNom());
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -93,37 +71,33 @@ public class Environnement {
                 break;
             }
         }
-        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc); //regarde position du bloc (tout en haut ou tout en bas par exemple)
-        this.needToBeMove(bloc, indexHashMap, indexBloc); // regarde s'il peut bouger
-        int nextPosition = this.calculerBestMove(bloc, indexHashMap, indexBloc);
-        if (bloc.isPushed()) { // si le bloc est poussée
-            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // si il est tout en haut, il se déplace
-                bloc.setPushed(false); // du coup il n'est plus poussé
-                bloc.seDeplacer2(nextPosition);// il se déplace aléatoirement
-            } else {
-                bloc.pousser2(hashMap.get(indexHashMap).get(indexBloc + 1)); // si il est poussé, mais ne peut pas se déplacer, il pousse
-            }
-        } else if (!bloc.isSatisfied()) { // si le bloc n'est pas poussé, mais n'est pas satisfait
-            if (indexBloc + 1 == this.hashMap.get(indexHashMap).size()) { // il est tout en haut, il peut bouger
-                bloc.seDeplacer2(nextPosition);
-                this.needToBeMove(bloc, nextPosition, this.getHashMap().get(nextPosition).indexOf(bloc)); // regarde si le bloc est satisfait ou non
-                if (bloc.isSatisfied()) { // le bloc vient d'être bien placé
-                    bloc.setPriorite(0); // sa priorité devient donc 0, il n'a plus a bougé
-                }
-            } else { // il ne peut pas bouger, il pousse
-                bloc.pousser2(hashMap.get(indexHashMap).get(indexBloc + 1));
-            }
-        } else { // Le premier bloc est bien placé, il faut pousser ceux du haut du coup, -> QUESTION 2
-            bloc.setPriorite(0);
-            bloc.pousser2(this.getHashMap().get(0).get(3));
-            bloc.pousser2(this.getHashMap().get(0).get(2));
-            bloc.pousser2(this.getHashMap().get(0).get(1));
-
+        int nbAleatoire = indexHashMap;
+        while (nbAleatoire == indexHashMap) {
+            nbAleatoire = rand.nextInt(3); // tire un des deux autres emplacements possibles
         }
-
+        return nbAleatoire;
     }
 
-    public int calculerBestMove(Bloc bloc, int indexHashMap, int indexStack) {
+    public Bloc getBlocAuDessus(Bloc bloc) {
+        int indexHashMap = 0;
+        for (int i = 0; i < hashMap.size(); i++) {
+            if (hashMap.get(i).contains(bloc)) {
+                indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
+                break;
+            }
+        }
+        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc);
+        return this.hashMap.get(indexHashMap).get(indexBloc + 1);
+    }
+
+    public int calculerBestMove(Bloc bloc) {
+        int indexHashMap = 0;
+        for (int i = 0; i < hashMap.size(); i++) {
+            if (hashMap.get(i).contains(bloc)) {
+                indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
+                break;
+            }
+        }
         Random rand = new Random();
         int bestPosition = indexHashMap;
 
@@ -180,12 +154,22 @@ public class Environnement {
         return false;
     }
 
-    public void needToBeMove(Bloc bloc, int indexHashMap, int indexStack) { // met à jour si le bloc est bien placé ou non
-        if (indexStack == 0) {
+    public void needToBeMove(Bloc bloc) { // met à jour si le bloc est bien placé ou non
+        int indexHashMap = 0;
+        for (int i = 0; i < hashMap.size(); i++) {
+            if (hashMap.get(i).contains(bloc)) {
+                indexHashMap = i; // regarde sur quel emplacement est le bloc (1, 2 ou 3)
+            }
+        }
+        int indexBloc = hashMap.get(indexHashMap).indexOf(bloc);
+        if (indexBloc == 0) {
             bloc.setSatisfied(bloc.getBlocDessous() == null);
-        } else bloc.setSatisfied(bloc.getBlocDessous() == this.hashMap.get(indexHashMap).get(indexStack - 1));
+        } else bloc.setSatisfied(bloc.getBlocDessous() == this.hashMap.get(indexHashMap).get(indexBloc - 1));
     }
 
+    public HashMap<Integer, Stack<Bloc>> getHashMap() {
+        return hashMap;
+    }
 
     @Override
     public String toString() {
@@ -197,9 +181,5 @@ public class Environnement {
         }
 
         return "END \n -------------------------------------------------------";
-    }
-
-    public HashMap<Integer, Stack<Bloc>> getHashMap() {
-        return hashMap;
     }
 }

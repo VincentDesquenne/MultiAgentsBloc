@@ -41,7 +41,7 @@ public class Main {
             while (!end) {
                 nbAleatoire = rand.nextInt(4);
                 blocSelect = mesBlocs.get(nbAleatoire);
-                env.perception(blocSelect);
+                blocSelect.perception();
                 compteur++;
                 System.out.println(env);
                 System.out.println("NB Iteration : " + compteur);
@@ -73,7 +73,7 @@ public class Main {
             env.communicationAgent();
             while (!end) {
                 blocSelect = mesBlocs.stream().max(Comparator.comparingInt(Bloc::getPriorite)).get();
-                env.perception2(blocSelect);
+                blocSelect.perception2();
                 compteur++;
                 System.out.println(env);
                 System.out.println("NB Iteration : " + compteur);
