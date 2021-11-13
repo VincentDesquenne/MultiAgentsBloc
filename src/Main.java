@@ -49,7 +49,7 @@ public class Main {
             }
             total += compteur;
         }
-        System.out.println("Sur " + n + " essais, la moyenne pour des agents qui communiquent entre eux est de : " + total / n);
+        System.out.println("Sur " + n + " essais, la moyenne pour des agents qui ne communiquent pas entre eux est de : " + total / n);
     }
 
     static void question2(int n) {

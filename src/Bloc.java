@@ -14,7 +14,7 @@ public class Bloc {
         this.isPushed = false;
     }
 
-    public void seDeplacer(int x) {
+    public void seDeplacer(int x) { // fait déplacer le bloc
         int index = 0;
         for (int i = 0; i < environnement.getHashMap().size(); i++) {
             if (environnement.getHashMap().get(i).contains(this)) {
@@ -28,10 +28,10 @@ public class Bloc {
 
     public void perception() {
         System.out.println("C'est au tour de " + this.getNom());
-        this.environnement.needToBeMove(this);
-        if (this.isPushed()) { // si le bloc est poussée
+        this.environnement.needToBeMove(this); // regarde s'il peut bouger
+        if (this.isPushed()) { // regarde si il est poussé
             if (this.environnement.canMove(this)) {
-                int nbAleatoire = this.environnement.getAleatoirePosition(this); // si il est tout en haut, il se déplace
+                int nbAleatoire = this.environnement.getAleatoirePosition(this); // il peut bouger, il demande une position aléatoire à l'environnement
                 this.setPushed(false); // du coup il n'est plus poussé
                 this.seDeplacer(nbAleatoire); // il se déplace aléatoirement
             } else {
@@ -54,7 +54,7 @@ public class Bloc {
         this.environnement.needToBeMove(this);
         if (this.isPushed()) { // si le bloc est poussée
             if (this.environnement.canMove(this)) {
-                int nextPosition = this.environnement.calculerBestMove(this); // si il est tout en haut, il se déplace
+                int nextPosition = this.environnement.calculerBestMove(this); // si il est tout en haut, il se déplace à la meilleure position possible
                 this.setPushed(false); // du coup il n'est plus poussé
                 this.seDeplacer(nextPosition); // il se déplace aléatoirement
             } else {
@@ -73,7 +73,7 @@ public class Bloc {
                 Bloc blocAuDessus = this.environnement.getBlocAuDessus(this);
                 this.pousser2(blocAuDessus); // si il est poussé, mais ne peut pas se déplacer, il pousse
             }
-        } else {
+        } else { // cas ou le bloc A est en bas dés le début, il faut qu'il pousse tout le monde donc
             this.setPriorite(0);
             Bloc blocAuDessus = this.environnement.getBlocAuDessus(this);
             Bloc blocAuDessus2 = this.environnement.getBlocAuDessus(blocAuDessus);

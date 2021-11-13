@@ -29,7 +29,7 @@ public class Environnement {
         this.mesBlocs = mesBlocs;
     }
 
-    public void communicationAgent() {
+    public void communicationAgent() { // ici les agents vont communiquer entre eux dans l'environnement pour s'adresser eux-même des priorités
         Bloc blocAvant = null;
         for (int i = 0; i < 4; i++) {
             if (this.getHashMap().get(0).get(i).getBlocDessous() == null) {
@@ -50,7 +50,7 @@ public class Environnement {
         }
     }
 
-    public boolean canMove(Bloc bloc) {
+    public boolean canMove(Bloc bloc) { // regarde si le bloc en paramètre peut bouger
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -62,7 +62,7 @@ public class Environnement {
         return indexBloc + 1 == this.hashMap.get(indexHashMap).size();
     }
 
-    public int getAleatoirePosition(Bloc bloc) {
+    public int getAleatoirePosition(Bloc bloc) { // retourne position aléatoire pour déplacer le bloc
         Random rand = new Random();
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
@@ -78,7 +78,7 @@ public class Environnement {
         return nbAleatoire;
     }
 
-    public Bloc getBlocAuDessus(Bloc bloc) {
+    public Bloc getBlocAuDessus(Bloc bloc) { // retourne le bloc au dessus du bloc en paramètre
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -90,7 +90,7 @@ public class Environnement {
         return this.hashMap.get(indexHashMap).get(indexBloc + 1);
     }
 
-    public int calculerBestMove(Bloc bloc) {
+    public int calculerBestMove(Bloc bloc) { // retourne le meilleur emplacement possible selon la communication avec les autres agents
         int indexHashMap = 0;
         for (int i = 0; i < hashMap.size(); i++) {
             if (hashMap.get(i).contains(bloc)) {
@@ -142,7 +142,7 @@ public class Environnement {
         return bestPosition;
     }
 
-    public boolean estTermine() {
+    public boolean estTermine() { // regarde si la solution finale correspond avec l'état actuel de l'environnement
         for (Map.Entry<Integer, Stack<Bloc>> mapentry : hashMap.entrySet()) {
             if (mapentry.getValue().size() == 4) {
                 for (int i = 0; i < mapentry.getValue().size(); i++) {
